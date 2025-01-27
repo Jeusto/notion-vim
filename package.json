@@ -19,7 +19,9 @@
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "webextension-polyfill": "^0.12.0"
+    "react-hotkeys-hook": "^4.6.1",
+    "webextension-polyfill": "^0.12.0",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.30",
