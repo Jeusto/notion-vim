@@ -1,12 +1,16 @@
 import { create } from "zustand";
-import { VimKeySequenceTimeout, VimMode } from "./vimTypes";
+import { VimMode } from "./vimTypes";
+import { VimKeySequenceTimeout } from "../utils/constants";
+import { handleNormalMode } from "../modes/normalMode";
+import { handleInsertMode } from "../modes/insertMode";
+import { handleVisualMode } from "../modes/visualMode";
 
 interface VimState {
   mode: VimMode;
   previousMode: VimMode;
   keySequence: string;
   isRecording: boolean;
-  macros: Record<string, string[]>;
+  keySequenceTimeoutId: NodeJS.Timeout | null;
 
   // Mode actions
   setMode: (mode: VimMode) => void;
@@ -14,18 +18,9 @@ interface VimState {
   enterNormalMode: () => void;
   enterVisualMode: () => void;
 
-  // Scroll actions
-  scrollToTop: () => void;
-  scrollToBottom: () => void;
-
   // Key handling
   appendToKeySequence: (key: string) => void;
   clearKeySequence: () => void;
-
-  // Macro handling
-  startRecording: (register: string) => void;
-  stopRecording: () => void;
-  playMacro: (register: string) => void;
 }
 
 export const useVimStore = create<VimState>((set, get) => ({
@@ -34,20 +29,7 @@ export const useVimStore = create<VimState>((set, get) => ({
   keySequence: "",
   isRecording: false,
   macros: {},
-
-  scrollToTop: () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  },
-
-  scrollToBottom: () => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: "smooth",
-    });
-  },
+  keySequenceTimeoutId: null,
 
   setMode: (mode) =>
     set((state) => ({
@@ -61,39 +43,44 @@ export const useVimStore = create<VimState>((set, get) => ({
 
   appendToKeySequence: (key: string) => {
     const currentSequence = get().keySequence + key;
+    const mode = get().mode;
 
-    // Handle key sequences
-    if (currentSequence === "gg") {
-      get().scrollToTop();
-      set({ keySequence: "" });
-      return;
+    if (get().keySequenceTimeoutId) {
+      clearTimeout(get().keySequenceTimeoutId as NodeJS.Timeout);
     }
 
-    if (key === "G") {
-      get().scrollToBottom();
-      set({ keySequence: "" });
-      return;
+    switch (mode) {
+      case "NORMAL":
+        handleNormalMode(key, currentSequence);
+        break;
+      case "INSERT":
+        handleInsertMode(key, currentSequence);
+        break;
+      case "VISUAL":
+        handleVisualMode(key, currentSequence);
+        break;
     }
-
-    // Update key sequence
-    set({ keySequence: currentSequence });
 
     // Clear sequence after timeout
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       set({ keySequence: "" });
     }, VimKeySequenceTimeout);
+
+    set({
+      keySequence: currentSequence,
+      keySequenceTimeoutId: timeoutId,
+    });
   },
 
-  clearKeySequence: () => set({ keySequence: "" }),
-
-  startRecording: (register) => set({ isRecording: true }),
-
-  stopRecording: () => set({ isRecording: false }),
-
-  playMacro: (register) => {
-    const macro = get().macros[register];
-    if (macro) {
-      // Execute stored macro commands
+  clearKeySequence: () => {
+    // Remove timeout because sequence was cleared manually
+    const { keySequenceTimeoutId } = get();
+    if (keySequenceTimeoutId) {
+      clearTimeout(keySequenceTimeoutId);
     }
+    set({
+      keySequence: "",
+      keySequenceTimeoutId: null,
+    });
   },
 }));
