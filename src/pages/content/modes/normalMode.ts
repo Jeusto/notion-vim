@@ -1,12 +1,14 @@
 import { useVimStore } from "../store/useVimStore";
 
-export const handleNormalMode = (key: string) => {
-  const { enterInsertMode, enterVisualMode, appendToKeySequence } =
+export const handleNormalMode = (key: string, sequence: string) => {
+  const { enterInsertMode, enterVisualMode, clearKeySequence } =
     useVimStore.getState();
 
-  appendToKeySequence(key);
-
   switch (key) {
+    case "G":
+      scrollToBottom();
+      clearKeySequence();
+      break;
     case "i":
       enterInsertMode();
       break;
@@ -14,4 +16,25 @@ export const handleNormalMode = (key: string) => {
       enterVisualMode();
       break;
   }
+
+  switch (sequence) {
+    case "gg":
+      scrollToTop();
+      clearKeySequence();
+      break;
+  }
+};
+
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
+
+const scrollToBottom = () => {
+  window.scrollTo({
+    top: document.documentElement.scrollHeight,
+    behavior: "smooth",
+  });
 };
