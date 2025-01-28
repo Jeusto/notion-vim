@@ -1,4 +1,5 @@
 import { useVimStore } from "../store/useVimStore";
+import { toggleCaretStyle } from "../utils/common";
 
 export const handleNormalMode = (key: string, sequence: string) => {
   const { enterInsertMode, enterVisualMode, clearKeySequence } =
@@ -11,6 +12,7 @@ export const handleNormalMode = (key: string, sequence: string) => {
       break;
     case "i":
       enterInsertMode();
+      toggleCaretStyle();
       break;
     case "v":
       enterVisualMode();
