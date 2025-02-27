@@ -1,7 +1,7 @@
 import { useVimStore } from "../store/useVimStore";
 
 export function StatusBar() {
-  const { mode, keySequence } = useVimStore();
+  const { mode, keySequence, clearKeySequence } = useVimStore();
 
   return (
     <div
@@ -13,7 +13,9 @@ export function StatusBar() {
           : "bg-gray-300"
       }`}
     >
-      <p className="p-0 m-0">Nvim: {mode}</p>
+      <p className="p-0 m-0" onClick={clearKeySequence}>
+        Nvim: {mode}
+      </p>
       <p className="p-0 m-0">{keySequence}</p>
     </div>
   );

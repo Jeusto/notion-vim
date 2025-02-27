@@ -63,7 +63,7 @@ export const useVimStore = create<VimState>((set, get) => ({
 
     // Clear sequence after timeout
     const timeoutId = setTimeout(() => {
-      set({ keySequence: "" });
+      //   set({ keySequence: "" });
     }, VimKeySequenceTimeout);
 
     set({
