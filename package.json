@@ -17,7 +17,7 @@
   },
   "type": "module",
   "dependencies": {
-    "react": "^19.0.0",
+    "react": "^19.1.0",
     "react-dom": "^19.0.0",
     "react-hotkeys-hook": "^4.6.1",
     "webextension-polyfill": "^0.12.0",
@@ -27,7 +27,7 @@
     "@crxjs/vite-plugin": "^2.0.0-beta.30",
     "@types/chrome": "^0.0.297",
     "@types/node": "^22.10.5",
-    "@types/react": "^19.0.7",
+    "@types/react": "^19.1.0",
     "@types/react-dom": "^19.0.2",
     "@types/webextension-polyfill": "^0.12.1",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
